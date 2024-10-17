@@ -49,4 +49,7 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    //ITextPDF
+    implementation("com.itextpdf:itextpdf:5.5.13.3")
 }

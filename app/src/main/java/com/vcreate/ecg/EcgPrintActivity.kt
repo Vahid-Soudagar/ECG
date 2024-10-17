@@ -1,19 +1,31 @@
 package com.vcreate.ecg
 
+import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Canvas
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.print.PrintAttributes
+import android.print.PrintManager
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
 import com.vcreate.ecg.databinding.ActivityEcgPrintBinding
+import kotlinx.coroutines.launch
 import java.io.BufferedReader
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.io.InputStreamReader
+import java.time.LocalDateTime
 
 class EcgPrintActivity : AppCompatActivity() {
 
@@ -24,6 +36,7 @@ class EcgPrintActivity : AppCompatActivity() {
     private var restRate = ""
 
     private lateinit var binding: ActivityEcgPrintBinding
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityEcgPrintBinding.inflate(layoutInflater)
@@ -48,6 +61,88 @@ class EcgPrintActivity : AppCompatActivity() {
             finish()
         }
 
+        binding.printPdfBtn.setOnClickListener {
+            lifecycleScope.launch {
+                createPdf()
+            }
+        }
+
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun createPdf() {
+        // Create a patient object with specified details.
+        val patient = Patient(0, "Rahul Soni", "21", "Male")
+
+        // Initialize an EcgPdfService object to handle PDF generation.
+        val ecgPdfService = EcgPdfService()
+
+        // Get the current date and time.
+        val currentDateTime = LocalDateTime.now()
+
+        // Generate snapshots (bitmap images) of the ECG.
+        val bitmapList = generateSnapshots()
+
+        // Get bitmap images from drawable resources for parameters.
+        val parameterBitmapList = getBitmapFromDrawable()
+
+        // Create the ECG report PDF and obtain the file path.
+        val path = ecgPdfService.createEcgReport(
+            patient,
+            "Bridge Healthcare",
+            currentDateTime,
+            bitmapList,
+            parameterBitmapList,
+            heartRate,
+            restRate
+        )
+
+
+        // Get the system print manager service.
+        val printManager = getSystemService(Context.PRINT_SERVICE) as PrintManager
+
+        try {
+            // Create a print document adapter for the PDF.
+            val printDocumentAdapter =
+                PdfDocumentAdapter(
+                    this@EcgPrintActivity,
+                    path
+                )
+
+            // Print the PDF document with a specified name and print attributes.
+            printManager.print(
+                "Test Report",
+                printDocumentAdapter,
+                PrintAttributes.Builder().build()
+            )
+        } catch (e: Exception) {
+            // Log any exceptions that occur during printing.
+            Log.d("error", e.toString())
+        }
+    }
+
+    private fun getBitmapFromDrawable(): List<Bitmap> {
+        val lungsBitmap =
+            BitmapFactory.decodeResource(resources, R.drawable.icon_lungs)
+        val heartBitmap =
+            BitmapFactory.decodeResource(resources, R.drawable.icon_heart_)
+        return listOf(lungsBitmap, heartBitmap)
+    }
+
+    private fun generateSnapshots(): List<Bitmap> {
+        val bitmap1 = getBitmapFromView(binding.ecgGraphView1)
+        val bitmap2 = getBitmapFromView(binding.ecgGraphView2)
+        val bitmap3 = getBitmapFromView(binding.ecgGraphView3)
+        return listOf(bitmap1, bitmap2, bitmap3)
+    }
+
+    private fun getBitmapFromView(view: View): Bitmap {
+        val bitmap = Bitmap.createBitmap(
+            view.width, view.height, Bitmap.Config.ARGB_8888
+        )
+        val canvas = Canvas(bitmap)
+        view.draw(canvas)
+        return bitmap
     }
 
     private fun displayECGData(filePath: Uri) {

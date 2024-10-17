@@ -48,7 +48,6 @@ class MainActivity : AppCompatActivity() {
     private var isTimerRunning = false
 
     private var isRecording: Boolean = false
-    private var isActualRecording: Boolean = false
     private var recordingStartTime: Long = 0
     private var recordingDuration = ""
 
@@ -154,15 +153,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startRecordingTimer() {
-        val halfDuration = recordingDuration.toLong() / 2
         recordingTimer = object : CountDownTimer(recordingDuration.toLong(), 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 val secondsLeft = millisUntilFinished / 1000
                 binding.timer.text = "00:${if (secondsLeft < 10) "0" else ""}$secondsLeft"
-
-                if (millisUntilFinished == halfDuration && isActualRecording) {
-                    isActualRecording = true
-                }
             }
 
             override fun onFinish() {
@@ -174,7 +168,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun stopRecording() {
-        isActualRecording = false
         isRecording = false
         val recordingDuration = System.currentTimeMillis() - recordingStartTime
         Toast.makeText(
@@ -385,19 +378,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun processEcgWave1Data(dat: Int) {
-        if (isActualRecording) {
+        if (isRecording) {
             waveData1.add(dat)
         }
     }
 
     private fun processEcgWave2Data(dat: Int) {
-        if (isActualRecording) {
+        if (isRecording) {
             waveData2.add(dat)
         }
     }
 
     private fun processEcgWave3Data(dat: Int) {
-        if (isActualRecording) {
+        if (isRecording) {
             waveData3.add(dat)
         }
     }
