@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vcreate.ecg.data.ApiClient
 import com.vcreate.ecg.data.model.ApiResultDemo
+import com.vcreate.ecg.data.model.EcgRequest
 import com.vcreate.ecg.data.model.EcgResponse
 import com.vcreate.ecg.data.repo.ApiRepoImpl
 import com.vcreate.ecg.data.service.ApiInterface
@@ -23,7 +24,7 @@ class MainViewModel : ViewModel() {
     val ecgResponseResult: LiveData<ApiResultDemo<EcgResponse>> get() = _ecgResponse
 
 
-    fun getEcgResponse(data: String) {
+    fun getEcgResponse(data: EcgRequest) {
         viewModelScope.launch {
             _ecgResponse.postValue(repository.processEcg(data))
         }

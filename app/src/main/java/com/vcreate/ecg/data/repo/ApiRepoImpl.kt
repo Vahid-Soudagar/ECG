@@ -3,6 +3,7 @@ package com.vcreate.ecg.data.repo
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.vcreate.ecg.data.model.ApiResultDemo
+import com.vcreate.ecg.data.model.EcgRequest
 import com.vcreate.ecg.data.model.EcgResponse
 import com.vcreate.ecg.data.model.RequestErrorModel
 import com.vcreate.ecg.data.service.ApiInterface
@@ -13,7 +14,7 @@ class ApiRepoImpl(
 ) : ApiRepo {
 
 
-    override suspend fun processEcg(data: String): ApiResultDemo<EcgResponse> {
+    override suspend fun processEcg(data: EcgRequest): ApiResultDemo<EcgResponse> {
         return try {
             val response = apiService.processEcg(data)
             handleApiResponse(response)

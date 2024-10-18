@@ -20,6 +20,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import com.vcreate.ecg.R
 import com.vcreate.ecg.data.model.ApiResultDemo
+import com.vcreate.ecg.data.model.EcgRequest
 import com.vcreate.ecg.databinding.ActivityEcgPrintBinding
 import com.vcreate.ecg.ui.viewmodel.MainViewModel
 import com.vcreate.ecg.util.EcgPdfService
@@ -82,7 +83,7 @@ class EcgPrintActivity : AppCompatActivity() {
         binding.generateParameterBtn.setOnClickListener {
             if (file != null) {
                 val base64String = convertWavToBase64(file!!)
-                mainViewModel.getEcgResponse(base64String)
+                mainViewModel.getEcgResponse(EcgRequest(data = base64String))
             } else {
                 Toast.makeText(this, "File is Empty", Toast.LENGTH_SHORT).show()
             }
