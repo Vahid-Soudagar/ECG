@@ -1,7 +1,6 @@
-package com.vcreate.ecg
+package com.vcreate.ecg.util
 
 import android.graphics.Bitmap
-import android.graphics.fonts.Font
 import android.os.Build
 import android.os.Environment
 import android.util.Log

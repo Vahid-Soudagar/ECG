@@ -1,10 +1,11 @@
-package com.vcreate.ecg
+package com.vcreate.ecg.util
 
 import android.content.Context
 import android.view.LayoutInflater
 import android.widget.Button
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
+import com.vcreate.ecg.R
 
 // Function to show the edit duration dialog and pass the new duration via a lambda callback
 fun showEditDurationDialog(context: Context, onDurationChanged: (String) -> Unit) {

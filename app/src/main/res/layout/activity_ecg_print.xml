@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".EcgPrintActivity">
+    tools:context=".ui.EcgPrintActivity">
 
     <android.widget.Button
         android:id="@+id/pdf_back_btn"
@@ -22,13 +22,14 @@
         android:id="@+id/generatefileandshowecg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/bg_btn"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@id/pdf_back_btn"
+        android:layout_marginStart="15dp"
         android:text="Generate File"
         android:textAllCaps="false"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toStartOf="@+id/print_pdf_btn"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="15dp"
-        android:layout_marginEnd="25dp"/>
+        android:textSize="20sp" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/print_pdf_btn"
@@ -37,10 +38,26 @@
         android:text="Print File"
         android:textAllCaps="false"
         android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@drawable/bg_btn"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@id/generatefileandshowecg"
         android:layout_marginTop="15dp"
-        android:layout_marginEnd="25dp"/>
+        android:layout_marginStart="25dp"/>
+
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/generate_parameter_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Generate Data"
+        android:textAllCaps="false"
+        android:textSize="20sp"
+        android:visibility="gone"
+        android:background="@drawable/bg_btn"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@id/print_pdf_btn"
+        android:layout_marginTop="15dp"
+        android:layout_marginStart="25dp"/>
 
 
     <LinearLayout
@@ -55,19 +72,19 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent">
 
-        <com.vcreate.ecg.EcgGraphView
+        <com.vcreate.ecg.view.EcgGraphView
             android:id="@+id/ecg_graph_view1"
             android:layout_width="match_parent"
             android:layout_height="250dp"
             android:layout_marginBottom="15dp" />
 
-        <com.vcreate.ecg.EcgGraphView
+        <com.vcreate.ecg.view.EcgGraphView
             android:id="@+id/ecg_graph_view2"
             android:layout_width="match_parent"
             android:layout_height="250dp"
             android:layout_marginBottom="15dp" />
 
-        <com.vcreate.ecg.EcgGraphView
+        <com.vcreate.ecg.view.EcgGraphView
             android:id="@+id/ecg_graph_view3"
             android:layout_width="match_parent"
             android:layout_height="250dp" />

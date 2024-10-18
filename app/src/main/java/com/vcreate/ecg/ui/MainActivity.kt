@@ -1,4 +1,4 @@
-package com.vcreate.ecg
+package com.vcreate.ecg.ui
 
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
@@ -17,6 +17,8 @@ import com.vcreate.ecg.bluetooth.connection.Bluetooth
 import com.vcreate.ecg.bluetooth.data.DataParser
 import com.vcreate.ecg.bluetooth.data.ECG
 import com.vcreate.ecg.databinding.ActivityMainBinding
+import com.vcreate.ecg.util.SensitiveAddressPreferenceManager
+import com.vcreate.ecg.util.showEditDurationDialog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -326,6 +328,12 @@ class MainActivity : AppCompatActivity() {
         override fun onEcgReceived(ecg: ECG?) {
             coroutineScope.launch {
                 ecg?.let {
+                    if (isTimerRunning) {
+                        binding.heartRate.text = ecg.heartRate.toString()
+                        binding.respiration.text = ecg.restRate.toString()
+                        binding.arrCode.text = ecg.arrCode.toString()
+                        binding.stLevel.text = ecg.stLevel.toString()
+                    }
                 }
             }
         }

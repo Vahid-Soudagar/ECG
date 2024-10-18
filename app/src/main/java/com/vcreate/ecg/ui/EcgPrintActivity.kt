@@ -1,7 +1,6 @@
-package com.vcreate.ecg
+package com.vcreate.ecg.ui
 
 import android.content.Context
-import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
@@ -10,21 +9,30 @@ import android.os.Build
 import android.os.Bundle
 import android.print.PrintAttributes
 import android.print.PrintManager
+import android.util.Base64
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
+import com.vcreate.ecg.R
+import com.vcreate.ecg.data.model.ApiResultDemo
 import com.vcreate.ecg.databinding.ActivityEcgPrintBinding
+import com.vcreate.ecg.ui.viewmodel.MainViewModel
+import com.vcreate.ecg.util.EcgPdfService
+import com.vcreate.ecg.util.Patient
+import com.vcreate.ecg.util.PdfDocumentAdapter
 import kotlinx.coroutines.launch
 import java.io.BufferedReader
+import java.io.File
 import java.io.FileNotFoundException
+import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStreamReader
+import java.nio.file.Files
 import java.time.LocalDateTime
 
 class EcgPrintActivity : AppCompatActivity() {
@@ -34,6 +42,10 @@ class EcgPrintActivity : AppCompatActivity() {
 
     private var heartRate = ""
     private var restRate = ""
+
+    private val mainViewModel: MainViewModel by viewModels()
+
+    var file: File? = null
 
     private lateinit var binding: ActivityEcgPrintBinding
     @RequiresApi(Build.VERSION_CODES.O)
@@ -66,6 +78,27 @@ class EcgPrintActivity : AppCompatActivity() {
                 createPdf()
             }
         }
+
+        binding.generateParameterBtn.setOnClickListener {
+            if (file != null) {
+                val base64String = convertWavToBase64(file!!)
+                mainViewModel.getEcgResponse(base64String)
+            } else {
+                Toast.makeText(this, "File is Empty", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        mainViewModel.ecgResponseResult.observe(this, Observer { result ->
+            when (result) {
+                is ApiResultDemo.Success -> {
+                    Log.d("APiResult", "Api Result Success ${result.data}")
+                }
+
+                is ApiResultDemo.Error -> {
+                    Log.d("APiResult", "Api Result Error ${result.error}")
+                }
+            }
+        })
 
     }
 
@@ -145,6 +178,7 @@ class EcgPrintActivity : AppCompatActivity() {
         return bitmap
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun displayECGData(filePath: Uri) {
         val allNumbers = parseAllNumbersFromTextFile(filePath)
 
@@ -172,7 +206,42 @@ class EcgPrintActivity : AppCompatActivity() {
         binding.ecgGraphView1.invalidate()
         binding.ecgGraphView2.invalidate()
         binding.ecgGraphView3.invalidate()
+
+        try {
+            file = saveWave1ToTextFile(wave1Mv)
+            binding.generateParameterBtn.visibility = View.VISIBLE
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
+
+    private fun saveWave1ToTextFile(wave1Mv: List<Float>): File? {
+        return try {
+            // Create a file in the app's internal storage or external storage
+            val fileName = "ecg_wave1_data.txt"
+            val file = File(getExternalFilesDir(null), fileName)
+
+            // Open the file for writing
+            val fileOutputStream = FileOutputStream(file)
+
+            // Prepare the data (each value on a new line)
+            val wave1Data = wave1Mv.joinToString("\n") { it.toString() }
+
+            // Write the data to the file
+            fileOutputStream.write(wave1Data.toByteArray())
+            fileOutputStream.close()
+
+            Log.d("FileSave", "Wave 1 data saved successfully at: ${file.absolutePath}")
+
+            // Return the file if everything goes well
+            file
+        } catch (e: Exception) {
+            Log.e("FileSave", "Error saving Wave 1 data to file: ${e.message}")
+            // Return null in case of an exception
+            null
+        }
+    }
+
 
     private fun parseAllNumbersFromTextFile(path: Uri): List<Int> {
         val numbersList = mutableListOf<Int>()
@@ -209,5 +278,20 @@ class EcgPrintActivity : AppCompatActivity() {
             result.add(numbersList[i])
         }
         return result
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun convertWavToBase64(file: File): String {
+        var base64String: String = ""
+        try {
+            // Read the file into a byte array
+            val fileBytes = Files.readAllBytes(file.toPath())
+            base64String = Base64.encodeToString(fileBytes, Base64.DEFAULT)
+        } catch (e: IOException) {
+            Log.e("myTag", "${e.message} ${e.printStackTrace()}")
+            e.printStackTrace()
+        }
+
+        return base64String
     }
 }

@@ -1,4 +1,4 @@
-package com.vcreate.ecg
+package com.vcreate.ecg.util
 
 import android.content.Context
 import android.content.SharedPreferences

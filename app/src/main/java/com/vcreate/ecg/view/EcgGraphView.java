@@ -3,7 +3,7 @@
  * Author: Vahid Soudagar
  */
 
-package com.vcreate.ecg;
+package com.vcreate.ecg.view;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -16,6 +16,8 @@ import android.view.SurfaceView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+
+import com.vcreate.ecg.R;
 
 import org.jetbrains.annotations.NotNull;
 

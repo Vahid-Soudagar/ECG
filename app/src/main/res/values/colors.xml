@@ -5,4 +5,6 @@
     <color name="r1">#FFFF0000</color>
     <color name="r2">#1AFF0000</color>
     <color name="ecg">#fbdde7</color>
+
+    <color name="blue">#13A6B4</color>
 </resources>

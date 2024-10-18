@@ -1,25 +1,22 @@
-package com.vcreate.ecg
+package com.vcreate.ecg.ui
 
 import android.Manifest
 import android.bluetooth.BluetoothDevice
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import com.vcreate.ecg.R
 import com.vcreate.ecg.bluetooth.callbacks.BluetoothCallBack
 import com.vcreate.ecg.bluetooth.callbacks.DiscoveryCallBack
 import com.vcreate.ecg.bluetooth.connection.Bluetooth
 import com.vcreate.ecg.databinding.ActivityBluetoothConnectionBinding
+import com.vcreate.ecg.util.SensitiveAddressPreferenceManager
 
 class BluetoothConnectionActivity : AppCompatActivity() {
 
