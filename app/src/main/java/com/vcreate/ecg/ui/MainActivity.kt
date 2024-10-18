@@ -66,6 +66,8 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        initDialogs()
+
         bluetooth = Bluetooth.getInstance(this).apply {
             setCallbackOnUI(this@MainActivity)
             setDeviceCallback(deviceCallBack)
@@ -75,7 +77,7 @@ class MainActivity : AppCompatActivity() {
         dataParser.start()
 
         onClickListener()
-        initDialogs()
+
 
     }
 
@@ -139,8 +141,8 @@ class MainActivity : AppCompatActivity() {
                     preferenceManager.saveData("")
                     val intent = Intent(this, EcgPrintActivity::class.java).apply {
                         putExtra("RECORDED_FILE_URI", fileUri.toString())
-                        putExtra("HEART_RATE", 100)
-                        putExtra("REST_RATE", 100)
+                        putExtra("HEART_RATE", binding.heartRate.text.toString())
+                        putExtra("REST_RATE", binding.respiration.text.toString())
                         putExtra("ECG_DATA_PATH", stringFile?.absolutePath)
                     }
                     startActivity(intent)
@@ -250,7 +252,7 @@ class MainActivity : AppCompatActivity() {
                 if (deviceAddress != null) {
                     if (deviceAddress.isNotEmpty()) {
                         bluetoothDevice = bluetooth.getRemoteDevice(deviceAddress)
-                        if (::bluetoothDevice.isInitialized) {
+                        if (:: bluetoothDevice.isInitialized) {
                             bluetooth.connectToDeviceWithPortTrick(bluetoothDevice)
                         } else {
                             Log.d("TAG", "Bluetooth device is not initialised")
