@@ -354,12 +354,6 @@ class MainActivity : AppCompatActivity() {
         override fun onEcgReceived(ecg: ECG?) {
             coroutineScope.launch {
                 ecg?.let {
-                    if (isTimerRunning) {
-                        binding.heartRate.text = ecg.heartRate.toString()
-                        binding.respiration.text = ecg.restRate.toString()
-                        binding.arrCode.text = ecg.arrCode.toString()
-                        binding.stLevel.text = ecg.stLevel.toString()
-                    }
                 }
             }
         }

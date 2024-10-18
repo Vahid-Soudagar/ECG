@@ -217,7 +217,6 @@ class EcgPdfService {
         // Add the lungs image in the first column with rowspan
         val summaryCell = PdfPCell(Paragraph("Summary", MED_FONT))
         summaryCell.horizontalAlignment = Element.ALIGN_CENTER
-        summaryCell.rowspan = 2
         summaryCell.border = PdfPCell.NO_BORDER
         summaryCell.horizontalAlignment = Element.ALIGN_RIGHT
         summaryCell.verticalAlignment = Element.ALIGN_MIDDLE
@@ -247,7 +246,7 @@ class EcgPdfService {
         parameterTable.addCell(qrCellValue)
 
         // Add the heart rate in the fourth column
-        val qrsCell = PdfPCell(Paragraph("QR", MED_FONT))
+        val qrsCell = PdfPCell(Paragraph("QRS", MED_FONT))
         qrsCell.horizontalAlignment = Element.ALIGN_CENTER
         qrsCell.border = PdfPCell.NO_BORDER
         parameterTable.addCell(qrsCell)
