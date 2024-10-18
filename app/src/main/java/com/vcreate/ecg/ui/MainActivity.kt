@@ -293,7 +293,12 @@ class MainActivity : AppCompatActivity() {
             coroutineScope.launch {
                 ecg?.let {
                     withContext(Dispatchers.Main) {
-                        Log.d("receivecheck", "Data receive after parsing $ecg")
+                        if (isTimerRunning) {
+                            binding.heartRate.text = ecg.heartRate.toString()
+                            binding.respiration.text = ecg.restRate.toString()
+                            binding.arrCode.text = ecg.arrCode.toString()
+                            binding.stLevel.text = ecg.stLevel.toString()
+                        }
                     }
                 }
             }
