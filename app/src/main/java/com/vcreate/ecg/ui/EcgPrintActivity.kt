@@ -24,8 +24,10 @@ import com.vcreate.ecg.data.model.EcgRequest
 import com.vcreate.ecg.databinding.ActivityEcgPrintBinding
 import com.vcreate.ecg.ui.viewmodel.MainViewModel
 import com.vcreate.ecg.util.EcgPdfService
+import com.vcreate.ecg.util.ParameterData
 import com.vcreate.ecg.util.Patient
 import com.vcreate.ecg.util.PdfDocumentAdapter
+import com.vcreate.ecg.util.PreferenceManager
 import kotlinx.coroutines.launch
 import java.io.BufferedReader
 import java.io.File
@@ -82,6 +84,8 @@ class EcgPrintActivity : AppCompatActivity() {
 
         binding.generateParameterBtn.setOnClickListener {
             if (file != null) {
+                val preferenceManager = PreferenceManager(this)
+                preferenceManager.saveData("param")
                 val base64String = convertWavToBase64(file!!)
                 mainViewModel.getEcgResponse(EcgRequest(data = base64String))
             } else {
@@ -93,6 +97,14 @@ class EcgPrintActivity : AppCompatActivity() {
             when (result) {
                 is ApiResultDemo.Success -> {
                     Log.d("APiResult", "Api Result Success ${result.data}")
+                    val preferenceManager = PreferenceManager(this)
+                    val parameterData = ParameterData(
+                        hr = result.data.data.summary.hr.toString(),
+                        pr = result.data.data.summary.pr.toString(),
+                        qrs = result.data.data.summary.qrs.toString(),
+                        stLevel = result.data.data.summary.st.toString()
+                        )
+                    preferenceManager.saveParameterData(parameterData)
                 }
 
                 is ApiResultDemo.Error -> {
@@ -106,7 +118,13 @@ class EcgPrintActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     private fun createPdf() {
         // Create a patient object with specified details.
-        val patient = Patient(0, "Rahul Soni", "21", "Male")
+        val preferenceManager = PreferenceManager(this)
+        val patient = Patient(
+            patientId = 0,
+            name = preferenceManager.retrieveGuestDetails().fullName,
+            age = preferenceManager.retrieveGuestDetails().dateOfBirth,
+            sex = preferenceManager.retrieveGuestDetails().gender
+        )
 
         // Initialize an EcgPdfService object to handle PDF generation.
         val ecgPdfService = EcgPdfService()
@@ -120,6 +138,9 @@ class EcgPrintActivity : AppCompatActivity() {
         // Get bitmap images from drawable resources for parameters.
         val parameterBitmapList = getBitmapFromDrawable()
 
+        val data = preferenceManager.getData()
+        val parameterData = preferenceManager.getParameterData()
+
         // Create the ECG report PDF and obtain the file path.
         val path = ecgPdfService.createEcgReport(
             patient,
@@ -128,7 +149,9 @@ class EcgPrintActivity : AppCompatActivity() {
             bitmapList,
             parameterBitmapList,
             heartRate,
-            restRate
+            restRate,
+            data,
+            parameterData
         )
 
 

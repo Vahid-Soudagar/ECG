@@ -209,6 +209,67 @@ class EcgPdfService {
         return parameterTable
     }
 
+    private fun addSummary(parameterData: ParameterData) : PdfPTable {
+        val parameterTable = PdfPTable(6)
+        parameterTable.widthPercentage = 100f
+        parameterTable.horizontalAlignment = Element.ALIGN_LEFT
+
+        // Add the lungs image in the first column with rowspan
+        val summaryCell = PdfPCell(Paragraph("Summary", MED_FONT))
+        summaryCell.horizontalAlignment = Element.ALIGN_CENTER
+        summaryCell.rowspan = 2
+        summaryCell.border = PdfPCell.NO_BORDER
+        summaryCell.horizontalAlignment = Element.ALIGN_RIGHT
+        summaryCell.verticalAlignment = Element.ALIGN_MIDDLE
+        parameterTable.addCell(summaryCell)
+
+        // Add the respiration rate in the second column
+        val hrCell = PdfPCell(Paragraph("HR-", MED_FONT))
+        hrCell.horizontalAlignment = Element.ALIGN_CENTER
+        hrCell.border = PdfPCell.NO_BORDER
+        parameterTable.addCell(hrCell)
+
+        val hrCellValue = PdfPCell(Paragraph(parameterData.hr.toString(), BODY_FONT))
+        hrCellValue.horizontalAlignment = Element.ALIGN_CENTER
+        hrCellValue.border = PdfPCell.NO_BORDER
+        parameterTable.addCell(hrCellValue)
+
+
+        // Add the heart rate in the fourth column
+        val qrCell = PdfPCell(Paragraph("PR", MED_FONT))
+        qrCell.horizontalAlignment = Element.ALIGN_CENTER
+        qrCell.border = PdfPCell.NO_BORDER
+        parameterTable.addCell(qrCell)
+
+        val qrCellValue = PdfPCell(Paragraph(parameterData.pr.toString(), BODY_FONT))
+        qrCellValue.horizontalAlignment = Element.ALIGN_CENTER
+        qrCellValue.border = PdfPCell.NO_BORDER
+        parameterTable.addCell(qrCellValue)
+
+        // Add the heart rate in the fourth column
+        val qrsCell = PdfPCell(Paragraph("QR", MED_FONT))
+        qrsCell.horizontalAlignment = Element.ALIGN_CENTER
+        qrsCell.border = PdfPCell.NO_BORDER
+        parameterTable.addCell(qrsCell)
+
+        val qrsCellValue = PdfPCell(Paragraph(parameterData.qrs.toString(), BODY_FONT))
+        qrsCellValue.horizontalAlignment = Element.ALIGN_CENTER
+        qrsCellValue.border = PdfPCell.NO_BORDER
+        parameterTable.addCell(qrCellValue)
+
+        val stCell = PdfPCell(Paragraph("ST Level", MED_FONT))
+        stCell.horizontalAlignment = Element.ALIGN_CENTER
+        stCell.border = PdfPCell.NO_BORDER
+        parameterTable.addCell(stCell)
+
+        val stCellValue = PdfPCell(Paragraph(parameterData.stLevel.toString(), BODY_FONT))
+        stCellValue.horizontalAlignment = Element.ALIGN_CENTER
+        stCellValue.border = PdfPCell.NO_BORDER
+        parameterTable.addCell(qrCellValue)
+
+        return parameterTable
+    }
+
     private fun addImage(bitmap: Bitmap, document: Document) {
         val byteArrayOutputStream = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
@@ -233,7 +294,9 @@ class EcgPdfService {
         bitmaps: List<Bitmap>,
         parameterBitmaps: List<Bitmap>,
         heartRate: String,
-        respirationRate: String
+        respirationRate: String,
+        data: String?,
+        parameterData: ParameterData
     ) : String {
         val downloadsDir =
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
@@ -277,6 +340,11 @@ class EcgPdfService {
 
         addImage(bitmaps[2], document)
         document.add(Paragraph("III", BODY_FONT))
+
+        if (data != null && data == "param") {
+            val summarTable = addSummary(parameterData)
+            document.add(summarTable)
+        }
 
         document.close()
 

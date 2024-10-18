@@ -5,6 +5,8 @@ import com.google.gson.JsonSyntaxException
 import com.vcreate.ecg.data.model.ApiResultDemo
 import com.vcreate.ecg.data.model.EcgRequest
 import com.vcreate.ecg.data.model.EcgResponse
+import com.vcreate.ecg.data.model.GuestDetailRequest
+import com.vcreate.ecg.data.model.GuestDetailResponse
 import com.vcreate.ecg.data.model.RequestErrorModel
 import com.vcreate.ecg.data.service.ApiInterface
 import retrofit2.Response
@@ -20,6 +22,19 @@ class ApiRepoImpl(
             handleApiResponse(response)
         } catch (e: Exception) {
             val error = "Error in calling api $e"
+            return ApiResultDemo.Error(RequestErrorModel(error,null, null))
+        }
+    }
+
+    override suspend fun guestSignIn(guestDetails: GuestDetailRequest): ApiResultDemo<GuestDetailResponse> {
+        return try {
+
+            val response = apiService.guestAuth(guestDetails)
+            // Handle API response.
+            handleApiResponse(response)
+
+        } catch (e: Exception) {
+            val error = "Error in calling api"
             return ApiResultDemo.Error(RequestErrorModel(error,null, null))
         }
     }

@@ -12,11 +12,13 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
+import com.vcreate.ecg.R
 import com.vcreate.ecg.bluetooth.callbacks.DeviceCallBack
 import com.vcreate.ecg.bluetooth.connection.Bluetooth
 import com.vcreate.ecg.bluetooth.data.DataParser
 import com.vcreate.ecg.bluetooth.data.ECG
 import com.vcreate.ecg.databinding.ActivityMainBinding
+import com.vcreate.ecg.util.PreferenceManager
 import com.vcreate.ecg.util.SensitiveAddressPreferenceManager
 import com.vcreate.ecg.util.showEditDurationDialog
 import kotlinx.coroutines.CoroutineScope
@@ -57,6 +59,8 @@ class MainActivity : AppCompatActivity() {
 
     private var stringFile: File? = null
 
+    private lateinit var instructionDialog: EcgDialog
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -71,7 +75,19 @@ class MainActivity : AppCompatActivity() {
         dataParser.start()
 
         onClickListener()
+        initDialogs()
 
+    }
+
+    private fun initDialogs() {
+        instructionDialog = EcgDialog(
+            R.layout.dialog_form
+        )
+        instructionDialog.show(
+            supportFragmentManager,
+            "care.bridgehealth.tdmapp.utils.MyDialogFragment"
+        )
+        instructionDialog.isCancelable = false
     }
 
 
@@ -92,9 +108,11 @@ class MainActivity : AppCompatActivity() {
 
         binding.btnRecordEcg.setOnClickListener {
             if (bluetooth.isConnected) {
-                if (!isRecording) {
+                if (binding.timer.text != "00:00" && !isRecording) {
                     Log.d("EcgActivity", "Button Click Recording Started")
                     startRecording()
+                } else {
+                    Toast.makeText(this, "Please Select Time", Toast.LENGTH_SHORT).show()
                 }
             } else {
                 Toast.makeText(this, "Bluetooth is not Connected", Toast.LENGTH_SHORT).show()
@@ -117,7 +135,8 @@ class MainActivity : AppCompatActivity() {
                         "${applicationContext.packageName}.fileprovider",
                         file
                     )
-
+                    val preferenceManager = PreferenceManager(this)
+                    preferenceManager.saveData("")
                     val intent = Intent(this, EcgPrintActivity::class.java).apply {
                         putExtra("RECORDED_FILE_URI", fileUri.toString())
                         putExtra("HEART_RATE", 100)
