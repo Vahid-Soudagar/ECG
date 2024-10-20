@@ -271,6 +271,7 @@ class MainActivity : AppCompatActivity() {
             runOnUiThread {
                 binding.status.text = "Connected"
             }
+            bluetooth.send(DataParser.CMD_CHANGE_ECG_MODE)
         }
 
 

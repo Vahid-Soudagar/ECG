@@ -34,6 +34,8 @@ public class DataParser {
     public static byte[] CMD_FW_VERSION = new byte[]{0x55, (byte) 0xaa, 0x04, (byte) 0xfc, 0x00, (byte) 0xff};
     public static byte[] CMD_HW_VERSION = new byte[]{0x55, (byte) 0xaa, 0x04, (byte) 0xfd, 0x00, (byte) 0xfe};
 
+    public static byte[] CMD_CHANGE_ECG_MODE = new byte[] {0x55, (byte) 0xAA, 0x04, 0x08, 0x03, (byte) 0xF1};
+
     //Parse Runnable
     private ParseRunnable mParseRunnable;
     private boolean isStop = true;
